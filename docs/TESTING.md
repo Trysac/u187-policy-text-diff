@@ -1,20 +1,15 @@
 # Testing
 
 ## Running
-
 ```sh
-uv run pytest --cov=policy_text_diff   # tests with coverage report
-uv run python scripts/check.py      # every gate, as CI and the factory run it
+uv run pytest --cov=policy_text_diff
 ```
 
-## Policy
+## Coverage
+Tests in `tests/test_policy_text_diff.py` cover:
+- Acceptance criteria: section matching, clause renumbering, reflow handling.
+- Edge cases: preamble handling, duplicate section keys, empty input.
+- Error handling: limits on `max_chars`, invalid options.
+- Rendering: verify output format parity for Markdown and JSON.
 
-- Branch coverage of `src/policy_text_diff` must stay at or above 80 %; the gate fails below it.
-- Tests exercise the public API (`import policy_text_diff`) and assert every observable effect:
-  return values, raised exceptions and their messages.
-- Each bug fix starts with a failing test that reproduces it.
-- Tests are deterministic: no network, no wall clock, no dependence on test order.
-
-## Layout
-
-`tests/test_<module>.py` mirrors each public module. Shared fixtures go in `tests/conftest.py`.
+Coverage must remain at or above 80%.

@@ -1,29 +1,13 @@
 # Architecture
 
-## Purpose
+`policy_text_diff` provides a structural, section-aware comparison engine for privacy policies and terms of service.
 
-`trysac-policy-text-diff` is a small, dependency-free Python library: Section-aware diff of privacy policy and terms versions: headings matched across renumbering, word-level changes, review keyword flags, Markdown or JSON
+## Parsing
+Documents are processed into `Section` instances via `parse_sections`. The parser recognizes Markdown ATX headings (`#` to `######`) and numbered clauses (e.g., `1.2.`). 
 
-## Shape
+Keys are normalized by removing clause identifiers, stripping `#` marks, converting to NFC Unicode, and lowercasing. Duplicate keys are disambiguated by appending ` #N`.
 
-```text
-caller code --> policy_text_diff (public API in __init__.py)
-                    |
-                    +-- pure functions, no I/O, no global state
-```
-
-- **Public API**: the names listed in `__all__` of `src/policy_text_diff/__init__.py`. Anything else is
-  internal and may change without a major version.
-- **Errors**: invalid input raises built-in exceptions (`ValueError`, `TypeError`) with a clear
-  message; the library never prints or exits.
-- **Side effects**: none. If a feature needs I/O, isolate it in its own module behind a small
-  interface and record the choice in an ADR.
-
-## Quality contract
-
-`scripts/check.py` is the single definition of the gates; `fabrica.json` tells the factory and CI
-how to run it. See [TESTING.md](TESTING.md).
-
-## Decisions
-
-Architecture decisions are recorded in [decisions/](decisions/) as numbered ADRs.
+## Matching and Diffing
+1. Matching: Sections are matched first by normalized key. Unmatched sections are then paired by `difflib.SequenceMatcher` ratio if they exceed `rename_threshold` (default 0.8).
+2. Operations: Word-level changes are calculated using `difflib` opcodes (ignoring equal segments). Added/removed sections are treated as bulk inserts/deletes.
+3. Flags: The library scans inserted or replaced text for case-insensitive substrings from `DEFAULT_KEYWORDS`, providing non-legal review hints.

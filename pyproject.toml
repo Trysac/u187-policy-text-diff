@@ -19,6 +19,9 @@ classifiers = [
 ]
 dependencies = []
 
+[project.scripts]
+policy-text-diff = "policy_text_diff.__main__:main"
+
 [project.urls]
 Homepage = "https://github.com/Trysac/u187-policy-text-diff"
 Source = "https://github.com/Trysac/u187-policy-text-diff"

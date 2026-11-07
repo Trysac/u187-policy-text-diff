@@ -9,4 +9,5 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- feat: implement section-aware policy text diff with renumbering tolerance, keyword flags, and CLI.
 - Initial project structure from the factory utility template.

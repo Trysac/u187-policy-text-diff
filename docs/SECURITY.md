@@ -1,19 +1,13 @@
-# Security notes
+# Security
 
-## Threat model
+## Threat Model
+`policy-text-diff` processes arbitrary text inputs which may be user-supplied or from untrusted sources.
 
-`trysac-policy-text-diff` is a pure library without I/O. The main risks are:
+### Defended
+- **Denial of Service**: Processing is capped by `max_chars = 2_000_000` to prevent memory exhaustion and quadratic complexity during `SequenceMatcher` execution.
+- **Unbounded Output**: Rendered operations are truncated to 200 characters to prevent terminal flood/injection.
+- **Input Sanitization**: Unicode normalization (NFC) is applied automatically.
 
-- **Supply chain**: a compromised dependency or CI action. Mitigation: no runtime dependencies,
-  Dependabot weekly updates, actions pinned to major versions, minimal workflow permissions.
-- **Leaked secrets**: tokens committed by mistake. Mitigation: `gitleaks` runs in the local gates
-  and in CI; `.env` files are git-ignored.
-- **Untrusted input**: callers may pass hostile strings. Mitigation: validate input and fail with
-  explicit exceptions; never `eval`, `exec` or deserialize untrusted data.
-
-## Publishing
-
-Releases are published to PyPI with trusted publishing (OIDC) when available, never with a
-long-lived token stored in the repository.
-
-To report a vulnerability, see [SECURITY.md](../SECURITY.md).
+### Not Defended
+- **Non-text formats**: Processing binary data is out of scope and will yield undefined text output.
+- **Semantic logic**: No analysis of legal or logical validity is performed.
